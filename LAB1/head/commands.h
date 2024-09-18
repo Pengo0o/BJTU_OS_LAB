@@ -21,6 +21,7 @@ void cp(const char commands[MAX_COMMAND_ARGC][MAX_COMMAND_LENGTH], int commands_
 void exitshell(const char commands[MAX_COMMAND_ARGC][MAX_COMMAND_LENGTH], int commands_length) ;
 void cd(const char commands[MAX_COMMAND_ARGC][MAX_COMMAND_LENGTH], int commands_length);
 void type(const char commands[MAX_COMMAND_ARGC][MAX_COMMAND_LENGTH], int commands_length);
+void env(const char commands[MAX_COMMAND_ARGC][MAX_COMMAND_LENGTH],int command_length);
 int parse_input(char *input_line, char commands[MAX_COMMAND_ARGC][MAX_COMMAND_LENGTH]) ;
 void execute_external_command(char commands[MAX_COMMAND_ARGC][MAX_COMMAND_LENGTH], int commands_length) ;
 #endif

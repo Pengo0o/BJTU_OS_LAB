@@ -45,6 +45,8 @@ int _main() {
             cp(commands, commands_length);
         else if (strcmp(commands[0], "type") == 0)
             type(commands, commands_length);
+        else if (strstr(commands[0],"env") !=NULL)
+            env(commands,commands_length);
         else
             execute_external_command(commands, commands_length);
     }

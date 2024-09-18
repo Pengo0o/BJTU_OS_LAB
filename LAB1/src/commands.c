@@ -171,11 +171,11 @@ void ls(const char commands[MAX_COMMAND_ARGC][MAX_COMMAND_LENGTH], int commands_
                 strcpy(path, commands[i]);
         }
     if (!print_file_names(path, show_hidden, 0))
-        printf(COLOR_RED "error: %s does not exist!\n" COLOR_RESET, path);
+        printf(COLOR_RED "Error: %s does not exist!\n" COLOR_RESET, path);
 }
 
 void pwd(const char commands[MAX_COMMAND_ARGC][MAX_COMMAND_LENGTH], int commands_length) {
-    if (commands_length != 1) printf(COLOR_RED "error: too many parameters!\n" COLOR_RESET);
+    if (commands_length != 1) printf(COLOR_RED "Error: too many parameters!\n" COLOR_RESET);
     else {
         char cwd[256];
         if (getcwd(cwd, sizeof(cwd))) printf("%s\n", cwd);
@@ -184,7 +184,7 @@ void pwd(const char commands[MAX_COMMAND_ARGC][MAX_COMMAND_LENGTH], int commands
 }
 
 void cat(const char commands[MAX_COMMAND_ARGC][MAX_COMMAND_LENGTH], int commands_length) {
-    if (commands_length < 2) printf(COLOR_RED "error: at least one parameter needed\n" COLOR_RESET);
+    if (commands_length < 2) printf(COLOR_RED "Error: at least one parameter needed\n" COLOR_RESET);
     else {
         char BUFFER[256];
         int cnt;
@@ -200,10 +200,10 @@ void cat(const char commands[MAX_COMMAND_ARGC][MAX_COMMAND_LENGTH], int commands
 }
 
 void cp(const char commands[MAX_COMMAND_ARGC][MAX_COMMAND_LENGTH], int commands_length) {
-    if (commands_length != 3) printf(COLOR_RED "error: cp requires two parameters\n" COLOR_RESET);
+    if (commands_length != 3) printf(COLOR_RED "Error: cp requires two parameters\n" COLOR_RESET);
     else {
         if (access(commands[1], F_OK) == -1)
-            printf(COLOR_RED "error: %s does not exist!\n" COLOR_RESET, commands[1]);
+            printf(COLOR_RED "Error: %s does not exist!\n" COLOR_RESET, commands[1]);
         else {
             if (is_dir(commands[2])) {
                 char file_name[MAX_COMMAND_LENGTH];
@@ -226,7 +226,7 @@ void exitshell(const char commands[MAX_COMMAND_ARGC][MAX_COMMAND_LENGTH], int co
     else if (commands_length == 2) {
         int exit_code = atoi(commands[1]);
         exit(exit_code);
-    } else printf(COLOR_RED "error: too many parameters!\n" COLOR_RESET);
+    } else printf(COLOR_RED "Error: too many parameters!\n" COLOR_RESET);
 }
 
 void cd(const char commands[MAX_COMMAND_ARGC][MAX_COMMAND_LENGTH], int commands_length) {
@@ -236,12 +236,12 @@ void cd(const char commands[MAX_COMMAND_ARGC][MAX_COMMAND_LENGTH], int commands_
         if (!path) path = "/";
     } else if (commands_length == 2)
         path = commands[1];
-    else { printf(COLOR_RED "error: too many parameters!\n" COLOR_RESET); return; }
+    else { printf(COLOR_RED "Error: too many parameters!\n" COLOR_RESET); return; }
     if (chdir(path) != 0) perror("cd");
 }
 
 void type(const char commands[MAX_COMMAND_ARGC][MAX_COMMAND_LENGTH], int commands_length) {
-    if (commands_length != 2) printf(COLOR_RED "error: need exactly one parameter!\n" COLOR_RESET);
+    if (commands_length != 2) printf(COLOR_RED "Error: need exactly one parameter!\n" COLOR_RESET);
     else {
         int is_builtin = 0;
         for (int i = 0; i < BUILDIN_NUM; i++)
@@ -256,9 +256,41 @@ void type(const char commands[MAX_COMMAND_ARGC][MAX_COMMAND_LENGTH], int command
             if (external_path[0] != '#')
                 printf("%s is an external command located at %s\n", commands[1], external_path);
             else
-                printf(COLOR_RED "error: %s does not exist!\n" COLOR_RESET, commands[1]);
+                printf(COLOR_RED "Error: %s does not exist!\n" COLOR_RESET, commands[1]);
         }
     }
+}
+void env(const char commands[MAX_COMMAND_ARGC][MAX_COMMAND_LENGTH],int command_length){
+    char* env_param;
+    if (strcmp(commands[0],"getenv") == 0)
+    {
+        if (command_length>2) printf(COLOR_RED"Error: too much parameters!\n" COLOR_RESET);
+        else if (command_length == 2){
+            env_param = getenv(commands[1]);
+            if (!env_param) printf(COLOR_RED"Error: %s is not existed!\n"COLOR_RESET,commands[1]);
+            else printf("%s:%s\n",commands[1],env_param);
+        }
+        else printf(COLOR_RED"Error: %s need 1 parameters!\n"COLOR_RESET,commands[0]);
+    }
+    else if (strcmp(commands[0],"setenv")==0)
+    {
+        if (command_length>4) printf(COLOR_RED"Error: too much parameters!\n" COLOR_RESET);
+        else if (command_length == 4){
+            if (setenv(commands[1],commands[2],atoi(commands[3]))==0) printf("Successful!\n");
+            else printf(COLOR_RED"Failed!\n"COLOR_RESET); 
+        }
+        else printf(COLOR_RED "Error: %s need 3 parameters!\n"COLOR_RESET,commands[0]);
+
+    }
+    else{
+        if (command_length>2) printf(COLOR_RED"Error: too much parameters!\n"COLOR_RESET);
+        else if (command_length == 2){
+            if (unsetenv(commands[1])==0) printf("Successful!\n");
+            else printf(COLOR_RED"Failed!\n"COLOR_RESET);
+        }  
+        else printf(COLOR_RED "Error: %s need 1 parameters!\n"COLOR_RESET,commands[0]);
+    }
+    
 }
 
 int parse_input(char *input_line, char commands[MAX_COMMAND_ARGC][MAX_COMMAND_LENGTH]) {
